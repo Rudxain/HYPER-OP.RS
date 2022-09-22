@@ -1,0 +1,22 @@
+[package]
+name = "ackermann"
+version = "0.1.0"
+edition = "2021"
+description = "Calculates the Ackermann-Péter function with arbitrary precision I/O"
+keywords = ["math", "recursion", "big"]
+categories = ["command-line-utilities", "algorithms"]
+license = "Unlicense"
+repository = "https://github.com/Rudxain/ackermann.rs"
+
+[[bin]]
+name = "ack"
+path = "src/main.rs"
+
+[dependencies]
+num-bigint = "0.4"
+num-traits = "0.2"
+
+[profile.release]
+strip = true
+lto = true
+codegen-units = 1

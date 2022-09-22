@@ -72,7 +72,7 @@ fn pow(base: BigUint, exp: BigUint) -> BigUint {
 
 ///Calculates the [Hyper-Operation function](https://en.wikipedia.org/wiki/Hyperoperation#Definition)
 ///
-///`order` is `n`, `base` is `a`, `exp` is `b`
+///`n` is `n` ("order"), `base` is `a`, `exp` is `b`
 ///
 ///This helper is necessary because it's **WAY BETTER** than the Ackermann fn.
 ///It's faster, uses less memory, and it's more readable, than the optimized ack fn with explicit stack.

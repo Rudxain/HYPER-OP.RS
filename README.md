@@ -18,3 +18,7 @@ Example:
 ack help #prints the help text
 ack 2 2 #prints 7, because `A(2, 2) = 7`
 ```
+
+# Disclaimer
+
+[One of the doc-comments is false](https://github.com/Rudxain/ackermann.rs/issues/2) (currently, but not in the future)

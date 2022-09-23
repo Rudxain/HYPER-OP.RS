@@ -11,7 +11,7 @@
 	clippy::unseparated_literal_suffix,
 	clippy::empty_structs_with_brackets,
 	clippy::format_push_string,
-	clippy::arithmetic_side_effects
+	//clippy::arithmetic_side_effects
 )]
 #![forbid(
 	unsafe_code,

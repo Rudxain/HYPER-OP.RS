@@ -8,7 +8,7 @@
 	clippy::unseparated_literal_suffix,
 	clippy::empty_structs_with_brackets,
 	clippy::format_push_string,
-	clippy::arithmetic_side_effects
+	//clippy::arithmetic_side_effects
 )]
 #![deny(clippy::unwrap_used)]
 #![forbid(
@@ -81,19 +81,24 @@ fn hyper_op(n: &BigUint, base: &BigUint, exp: &BigUint) -> BigUint {
 	let n0 = BigUint::zero();
 	let n1 = BigUint::one();
 	if n == &n0 {
+		println!("0");
 		return exp + n1;
 	}
 	if n == &n1 {
+		println!("1");
 		return base + exp;
 	}
 	let n2 = &n1 + &n1;
 	if n == &n2 {
+		println!("2");
 		return base * exp;
 	}
 	let n3 = &n2 + &n1;
 	if n == &n3 {
+		println!("3");
 		return pow(base.clone(), exp.clone());
 	}
+	println!("_");
 	if exp.is_zero() {
 		return n1;
 	};
@@ -128,6 +133,19 @@ fn hyper_op(n: &BigUint, base: &BigUint, exp: &BigUint) -> BigUint {
 ///For performance, this implementation is defined
 ///[like so](https://en.wikipedia.org/wiki/Ackermann_function#TRS,_based_on_hyperoperators)
 pub fn A(m: BigUint, n: BigUint) -> BigUint {
-	let n3 = BigUint::from(3_u64);
-	hyper_op(&m, &BigUint::from(2_u64), &(n + &n3)) - &n3
+	let n3 = BigUint::from(3_u8);
+	hyper_op(&m, &BigUint::from(2_u8), &(n + &n3)) - &n3
+}
+
+#[cfg(test)]
+mod tests {
+
+	use num_bigint::BigUint;
+	use crate::A;
+
+	#[test]
+	fn it_works() {
+		let result = A(BigUint::from(2_u8), BigUint::from(3_u8));
+		assert_eq!(result, BigUint::from(9_u8));
+	}
 }

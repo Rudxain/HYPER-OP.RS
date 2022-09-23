@@ -1,6 +1,6 @@
 [package]
 name = "ackermann"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "Calculates the Ackermann-Péter function with arbitrary precision I/O"
 keywords = ["math", "recursion", "big"]
@@ -9,7 +9,7 @@ license = "Unlicense"
 repository = "https://github.com/Rudxain/ackermann.rs"
 
 [[bin]]
-name = "ack"
+name = "ackmn"
 path = "src/main.rs"
 
 [dependencies]

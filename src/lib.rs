@@ -68,7 +68,7 @@ fn pow(base: &BigUint, exp: &BigUint) -> BigUint {
 
 		e > n1 //condition
 	} {}
-	n1
+	out
 }
 
 ///Calculates the [Hyper-Operation function](https://en.wikipedia.org/wiki/Hyperoperation#Definition)

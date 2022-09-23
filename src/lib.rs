@@ -48,13 +48,13 @@ fn pow(base: &BigUint, exp: &BigUint) -> BigUint {
 		return b.clone();
 	}
 
-	let n1 = BigUint::one();
+	let out = BigUint::one();
 
 	if b.is_one() || e.is_zero() {
-		return n1;
+		return out;
 	}
 
-	let mut out = n1.clone();
+	let mut out = out;
 
 	let mut b = b.clone();
 	let mut e = e.clone();
@@ -64,9 +64,9 @@ fn pow(base: &BigUint, exp: &BigUint) -> BigUint {
 			out *= &b;
 		}
 		e >>= 1;
-		b = &b * &b;
+		b *= &b * &b;
 
-		e > n1 //condition
+		!e.is_one() //condition
 	} {}
 	out
 }

@@ -44,6 +44,7 @@ fn pow(base: &BigUint, exp: &BigUint) -> BigUint {
 	let b = base;
 	let e = exp;
 
+	//this patches issue #1 (not a fix)
 	if *e <= BigUint::from(core::u32::MAX) {
 		return b.pow(e.to_u32_digits()[0]);
 	}

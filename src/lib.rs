@@ -81,24 +81,19 @@ fn hyper_op(n: &BigUint, base: &BigUint, exp: &BigUint) -> BigUint {
 	let n0 = BigUint::zero();
 	let n1 = BigUint::one();
 	if n == &n0 {
-		println!("0");
 		return exp + n1;
 	}
 	if n == &n1 {
-		println!("1");
 		return base + exp;
 	}
 	let n2 = &n1 + &n1;
 	if n == &n2 {
-		println!("2");
 		return base * exp;
 	}
 	let n3 = &n2 + &n1;
 	if n == &n3 {
-		println!("3");
 		return pow(base.clone(), exp.clone());
 	}
-	println!("_");
 	if exp.is_zero() {
 		return n1;
 	};

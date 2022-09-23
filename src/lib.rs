@@ -44,13 +44,17 @@ fn pow(base: &BigUint, exp: &BigUint) -> BigUint {
 	let b = base;
 	let e = exp;
 
-	if b.is_zero() || e.is_one() {
-		return b.clone();
+	if *e <= BigUint::from(core::u32::MAX) {
+		return b.pow(e.to_u32_digits()[0]);
+	}
+
+	if b.is_zero() {
+		return b.clone(); //should this be `BigUint::zero()`?
 	}
 
 	let out = BigUint::one();
 
-	if b.is_one() || e.is_zero() {
+	if b.is_one() {
 		return out;
 	}
 
@@ -97,7 +101,7 @@ fn hyper_op(n: &BigUint, base: &BigUint, exp: &BigUint) -> BigUint {
 	}
 	if exp.is_zero() {
 		return n1;
-	};
+	}
 
 	let n = n - &n1;
 	let mut exp = exp.clone();

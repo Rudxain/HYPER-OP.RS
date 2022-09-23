@@ -40,12 +40,12 @@ use num_traits::{One, Zero};
 ///
 ///This helper is necessary because the `pow` trait only supports `u32` as `exp`,
 ///but we need **truly arbitrary** precision, for mathematical correctness.
-fn pow(base: BigUint, exp: BigUint) -> BigUint {
+fn pow(base: &BigUint, exp: &BigUint) -> BigUint {
 	let b = base;
 	let e = exp;
 
 	if b.is_zero() || e.is_one() {
-		return b;
+		return b.clone();
 	}
 
 	let n1 = BigUint::one();
@@ -56,8 +56,8 @@ fn pow(base: BigUint, exp: BigUint) -> BigUint {
 
 	let mut out = n1.clone();
 
-	let mut b = b;
-	let mut e = e;
+	let mut b = b.clone();
+	let mut e = e.clone();
 	while {
 		if e.bit(0) {
 			out *= &b;
@@ -92,7 +92,7 @@ fn hyper_op(n: &BigUint, base: &BigUint, exp: &BigUint) -> BigUint {
 	}
 	let n3 = &n2 + &n1;
 	if n == &n3 {
-		return pow(base.clone(), exp.clone());
+		return pow(base, exp);
 	}
 	if exp.is_zero() {
 		return n1;

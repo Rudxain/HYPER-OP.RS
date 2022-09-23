@@ -58,6 +58,7 @@ fn pow(base: &BigUint, exp: &BigUint) -> BigUint {
 
 	let mut b = b.clone();
 	let mut e = e.clone();
+	//do-while
 	while {
 		if e.bit(0) {
 			out *= &b;
@@ -65,7 +66,7 @@ fn pow(base: &BigUint, exp: &BigUint) -> BigUint {
 		e >>= 1;
 		b = &b * &b;
 
-		e > n1 //condition of do-while
+		e > n1 //condition
 	} {}
 	n1
 }
@@ -135,8 +136,8 @@ pub fn A(m: BigUint, n: BigUint) -> BigUint {
 #[cfg(test)]
 mod tests {
 
-	use num_bigint::BigUint;
 	use crate::A;
+	use num_bigint::BigUint;
 
 	#[test]
 	fn it_works() {

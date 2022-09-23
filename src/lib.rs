@@ -141,7 +141,6 @@ pub fn A(m: BigUint, n: BigUint) -> BigUint {
 
 #[cfg(test)]
 mod tests {
-
 	use crate::A;
 	use num_bigint::BigUint;
 

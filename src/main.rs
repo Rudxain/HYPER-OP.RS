@@ -49,12 +49,12 @@ fn main() {
 
 	let m = match BigUint::from_str(&m) {
 		Ok(m) => m,
-		Err(e) => panic!("{}", e),
+		Err(e) => panic!("Cannot parse `m`. {}", e),
 	};
 
 	let n = match BigUint::from_str(&args[1]) {
 		Ok(n) => n,
-		Err(e) => panic!("{}", e),
+		Err(e) => panic!("Cannot parse `n`. {}", e),
 	};
 
 	//we need as much memory as possible for the next step

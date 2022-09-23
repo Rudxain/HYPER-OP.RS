@@ -86,6 +86,7 @@ fn pow(base: &BigUint, exp: &BigUint) -> BigUint {
 fn hyper_op(n: &BigUint, base: &BigUint, exp: &BigUint) -> BigUint {
 	let n0 = BigUint::zero();
 	let n1 = BigUint::one();
+
 	if n == &n0 {
 		return exp + n1;
 	}
@@ -135,7 +136,7 @@ fn hyper_op(n: &BigUint, base: &BigUint, exp: &BigUint) -> BigUint {
 ///[like so](https://en.wikipedia.org/wiki/Ackermann_function#TRS,_based_on_hyperoperators)
 pub fn A(m: BigUint, n: BigUint) -> BigUint {
 	let n3 = BigUint::from(3_u8);
-	hyper_op(&m, &BigUint::from(2_u8), &(n + &n3)) - &n3
+	hyper_op(&m, &BigUint::from(2_u8), &(n + &n3)) - n3
 }
 
 #[cfg(test)]

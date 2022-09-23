@@ -69,7 +69,7 @@ fn pow(base: &BigUint, exp: &BigUint) -> BigUint {
 			out *= &b;
 		}
 		e >>= 1;
-		b *= &b * &b;
+		b = &b * &b;
 
 		!e.is_one() //condition
 	} {}

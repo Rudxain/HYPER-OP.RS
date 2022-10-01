@@ -34,35 +34,25 @@
 use num_bigint::BigUint;
 use num_traits::{One, Zero};
 
-///Calculates `base` ^ `exp` (unbounded).
+///Calculates `b` ^ `e` (unbounded).
 ///
 ///It uses [binary exponentiation](https://en.wikipedia.org/wiki/Exponentiation_by_squaring) algorithm.
 ///
 ///This helper is necessary because the `pow` trait only supports `u32` as `exp`,
 ///but we need **truly arbitrary** precision, for mathematical correctness.
-fn big_pow(base: &BigUint, exp: &BigUint) -> BigUint {
-	let b = base;
-	let e = exp;
-
+fn big_pow(b: &BigUint, e: &BigUint) -> BigUint {
 	if *e <= BigUint::from(core::u32::MAX) {
 		return b.pow(e.to_u32_digits()[0]);
 	}
 
-	if b.is_zero() {
-		return b.clone(); //should this be `BigUint::zero()`?
+	if b.is_zero() || b.is_one() {
+		return b.clone();
 	}
-
-	let out = BigUint::one();
-
-	if b.is_one() {
-		return out;
-	}
-
-	let mut out = out;
 
 	let mut b = b.clone();
 	let mut e = e.clone();
 
+	let mut out = BigUint::one();
 	loop {
 		if e.bit(0) {
 			out *= &b;
@@ -71,6 +61,7 @@ fn big_pow(base: &BigUint, exp: &BigUint) -> BigUint {
 		b = &b * &b;
 
 		if e.is_one() {
+			drop(e);
 			break;
 		}
 	}
@@ -91,18 +82,21 @@ fn hyper_op(n: &BigUint, base: &BigUint, exp: &BigUint) -> BigUint {
 	if n.is_one() {
 		return base + exp;
 	}
-
-	let n1 = BigUint::one();
-	let n2 = &n1 + &n1;
-	if *n == n2 {
-		return base * exp;
-	}
-	let n3 = n2 + &n1;
-	if *n == n3 {
-		return big_pow(base, exp);
-	}
-	if exp.is_zero() {
-		return n1;
+	{
+		let n1 = BigUint::one();
+		let n2 = &n1 + &n1;
+		if *n == n2 {
+			drop([n1, n2]);
+			return base * exp;
+		}
+		let n3 = n2 + &n1;
+		if *n == n3 {
+			drop([n1, n3]);
+			return big_pow(base, exp);
+		}
+		if exp.is_zero() {
+			return n1;
+		}
 	}
 
 	let n = n - 1_u8;
@@ -142,8 +136,7 @@ where
 	let m = BigUint::from(m);
 	let n = BigUint::from(n);
 
-	let n1 = BigUint::one();
-	let n2 = &n1 + &n1;
+	let n2 = BigUint::from_slice(&[2]);
 
 	hyper_op(&m, &n2, &(n + 3_u8)) - 3_u8
 }

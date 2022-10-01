@@ -81,39 +81,39 @@ fn big_pow(base: &BigUint, exp: &BigUint) -> BigUint {
 ///
 ///`n` is `n` ("order"), `base` is `a`, `exp` is `b`
 ///
-///This helper is necessary because it's **WAY BETTER** than the Ackermann fn.
+///This helper is necessary because it's **way better** than the Ackermann fn.
 ///It's faster, uses less memory, and it's more readable, than the optimized ack fn with explicit stack.
 ///Also, it doesn't need memoization!
 fn hyper_op(n: &BigUint, base: &BigUint, exp: &BigUint) -> BigUint {
-	let n0 = BigUint::zero();
-	let n1 = BigUint::one();
-
-	if n == &n0 {
-		return exp + n1;
+	if n.is_zero() {
+		return exp + 1_u8;
 	}
-	if n == &n1 {
+	if n.is_one() {
 		return base + exp;
 	}
+
+	let n1 = BigUint::one();
 	let n2 = &n1 + &n1;
-	if n == &n2 {
+	if *n == n2 {
 		return base * exp;
 	}
-	let n3 = &n2 + &n1;
-	if n == &n3 {
+	let n3 = n2 + &n1;
+	if *n == n3 {
 		return big_pow(base, exp);
 	}
 	if exp.is_zero() {
 		return n1;
 	}
 
-	let n = n - &n1;
+	let n = n - 1_u8;
 	let mut exp = exp.clone();
 
 	let mut out = base.clone();
-	while {
-		exp -= &n1;
-		!exp.is_zero()
-	} {
+	loop {
+		exp -= 1_u8;
+		if exp.is_zero() {
+			break;
+		}
 		out = hyper_op(&n, base, &out);
 	}
 	out
@@ -135,19 +135,52 @@ fn hyper_op(n: &BigUint, base: &BigUint, exp: &BigUint) -> BigUint {
 ///
 ///For performance, this implementation is defined
 ///[like so](https://en.wikipedia.org/wiki/Ackermann_function#TRS,_based_on_hyperoperators)
-pub fn A(m: BigUint, n: BigUint) -> BigUint {
-	let n3 = BigUint::from(3_u8);
-	hyper_op(&m, &BigUint::from(2_u8), &(n + &n3)) - n3
+pub fn A<T>(m: T, n: T) -> BigUint
+where
+	BigUint: std::convert::From<T>,
+{
+	let m = BigUint::from(m);
+	let n = BigUint::from(n);
+
+	let n1 = BigUint::one();
+	let n2 = &n1 + &n1;
+
+	hyper_op(&m, &n2, &(n + 3_u8)) - 3_u8
 }
 
 #[cfg(test)]
 mod tests {
 	use crate::A;
 	use num_bigint::BigUint;
+	use num_traits::One;
 
 	#[test]
-	fn it_works() {
-		let result = A(BigUint::from(2_u8), BigUint::from(3_u8));
-		assert_eq!(result, BigUint::from(9_u8));
+	fn table_cmp() {
+		let mut m;
+
+		m = 0;
+		for n in 0..core::u8::MAX {
+			assert_eq!(A(m, n), BigUint::from(n + 1));
+		}
+
+		m = 1;
+		for n in 0..(core::u8::MAX - 1) {
+			assert_eq!(A(m, n), BigUint::from(n + 2));
+		}
+
+		m = 2;
+		for n in 0..(core::u8::MAX >> 2) {
+			assert_eq!(A(m, n), BigUint::from(2 * n + 3));
+		}
+
+		m = 3;
+		for n in 0..0x10 {
+			assert_eq!(A(m, n), BigUint::from(2_u32.pow(u32::from(n) + 3) - 3));
+		}
+
+		m = 4;
+		assert_eq!(A(m, 0), BigUint::from(13_u8));
+		assert_eq!(A(m, 1), BigUint::from(0xFFFD_u16));
+		assert_eq!(A(m, 2), (BigUint::one() << 0x1_00_00) - 3_u8);
 	}
 }

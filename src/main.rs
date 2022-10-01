@@ -26,11 +26,13 @@
 	clippy::float_cmp_const
 )]
 
-static HELP: &str = "\
-usage: ack m n
-where `n` and `m` are integer decimal numerals
-only the 1st 2 arguments are used, everyting else is ignored\
-";
+fn print_help() {
+	println!(
+		"usage: ack m n\n\
+		where `n` and `m` are integer decimal numerals\n\
+		only the 1st 2 arguments are used, everyting else is ignored"
+	);
+}
 
 fn main() {
 	use ackermann::A;
@@ -40,22 +42,18 @@ fn main() {
 	let args: Vec<String> = std::env::args().skip(1).take(2).collect();
 
 	if args.is_empty() {
-		return println!("{}", HELP);
+		return print_help();
 	};
-	let m = args[0].to_ascii_lowercase();
+	let m = &args[0].to_ascii_lowercase();
 	if m == "help" || m == "/?" {
-		return println!("{}", HELP);
+		return print_help();
 	};
 
-	let m = match BigUint::from_str(&m) {
-		Ok(m) => m,
-		Err(e) => panic!("Cannot parse `m`. {}", e),
-	};
+	let m = BigUint::from_str(m).expect("Cannot parse `m`");
 
-	let n = match BigUint::from_str(&args[1]) {
-		Ok(n) => n,
-		Err(e) => panic!("Cannot parse `n`. {}", e),
-	};
+	let n = &args[1];
+
+	let n = BigUint::from_str(n).expect("Cannot parse `n`");
 
 	//we need as much memory as possible for the next step
 	drop(args);

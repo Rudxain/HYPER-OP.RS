@@ -63,6 +63,7 @@ fn pow(base: &BigUint, exp: &BigUint) -> BigUint {
 
 	let mut b = b.clone();
 	let mut e = e.clone();
+
 	//do-while
 	while {
 		if e.bit(0) {
@@ -73,7 +74,7 @@ fn pow(base: &BigUint, exp: &BigUint) -> BigUint {
 
 		!e.is_one() //condition
 	} {}
-	out
+	out * b
 }
 
 ///Calculates the [Hyper-Operation function](https://en.wikipedia.org/wiki/Hyperoperation#Definition)

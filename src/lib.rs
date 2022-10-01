@@ -34,17 +34,16 @@
 use num_bigint::BigUint;
 use num_traits::{One, Zero};
 
-///Calculates `base` ^ `exp`.
+///Calculates `base` ^ `exp` (unbounded).
 ///
-///It uses [binary exponentiation](https://en.wikipedia.org/wiki/Exponentiation_by_squaring) algorithm
+///It uses [binary exponentiation](https://en.wikipedia.org/wiki/Exponentiation_by_squaring) algorithm.
 ///
 ///This helper is necessary because the `pow` trait only supports `u32` as `exp`,
 ///but we need **truly arbitrary** precision, for mathematical correctness.
-fn pow(base: &BigUint, exp: &BigUint) -> BigUint {
+fn big_pow(base: &BigUint, exp: &BigUint) -> BigUint {
 	let b = base;
 	let e = exp;
 
-	//this patches issue #1 (not a fix)
 	if *e <= BigUint::from(core::u32::MAX) {
 		return b.pow(e.to_u32_digits()[0]);
 	}
@@ -59,21 +58,24 @@ fn pow(base: &BigUint, exp: &BigUint) -> BigUint {
 		return out;
 	}
 
+	2_u64.pow(3_u8);
+
 	let mut out = out;
 
 	let mut b = b.clone();
 	let mut e = e.clone();
 
-	//do-while
-	while {
+	loop {
 		if e.bit(0) {
 			out *= &b;
 		}
 		e >>= 1;
 		b = &b * &b;
 
-		!e.is_one() //condition
-	} {}
+		if e.is_one() {
+			break;
+		}
+	}
 	out * b
 }
 
@@ -100,7 +102,7 @@ fn hyper_op(n: &BigUint, base: &BigUint, exp: &BigUint) -> BigUint {
 	}
 	let n3 = &n2 + &n1;
 	if n == &n3 {
-		return pow(base, exp);
+		return big_pow(base, exp);
 	}
 	if exp.is_zero() {
 		return n1;

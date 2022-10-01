@@ -58,8 +58,6 @@ fn big_pow(base: &BigUint, exp: &BigUint) -> BigUint {
 		return out;
 	}
 
-	2_u64.pow(3_u8);
-
 	let mut out = out;
 
 	let mut b = b.clone();

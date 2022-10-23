@@ -16,16 +16,16 @@ use num_traits::{One, Zero};
 ///
 ///This helper is necessary because the `pow` trait only supports `u32` as `exp`,
 ///but we need **truly arbitrary** precision, for mathematical correctness.
-fn big_pow(b: &BigUint, e: &BigUint) -> BigUint {
+fn big_pow(b: BigUint, e: &BigUint) -> BigUint {
 	if *e <= BigUint::from(core::u32::MAX) {
 		return b.pow(e.to_u32_digits()[0]);
 	}
 
 	if b.is_zero() || b.is_one() {
-		return b.clone();
+		return b;
 	}
 
-	let mut b = b.clone();
+	let mut b = b;
 	let mut e = e.clone();
 
 	let mut out = BigUint::one();
@@ -51,7 +51,7 @@ fn big_pow(b: &BigUint, e: &BigUint) -> BigUint {
 ///This helper is necessary because it's **way better** than the Ackermann fn.
 ///It's faster, uses less memory, and it's more readable, than the optimized ack fn with explicit stack.
 ///Also, it doesn't need memoization!
-fn hyper_op(n: &BigUint, base: &BigUint, exp: &BigUint) -> BigUint {
+fn hyper_op(n: &BigUint, base: BigUint, exp: &BigUint) -> BigUint {
 	if n.is_zero() {
 		return exp + 1_u8;
 	}
@@ -84,7 +84,7 @@ fn hyper_op(n: &BigUint, base: &BigUint, exp: &BigUint) -> BigUint {
 		if exp.is_zero() {
 			break;
 		}
-		out = hyper_op(&n, base, &out);
+		out = hyper_op(&n, base.clone(), &out);
 	}
 	out
 }
@@ -114,7 +114,7 @@ where
 
 	let n2 = BigUint::from_slice(&[2]);
 
-	hyper_op(&m, &n2, &(n + 3_u8)) - 3_u8
+	hyper_op(&m, n2, &(n + 3_u8)) - 3_u8
 }
 
 #[cfg(test)]

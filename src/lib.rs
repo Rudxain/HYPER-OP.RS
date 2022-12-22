@@ -119,7 +119,7 @@ where
 
 #[cfg(test)]
 mod tests {
-	use crate::A;
+	use super::A;
 	use num_bigint::BigUint;
 	use num_traits::One;
 

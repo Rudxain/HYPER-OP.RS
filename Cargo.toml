@@ -1,16 +1,12 @@
 [package]
-name = "ackermann"
-version = "0.4.1"
+name = "hyper-op"
+version = "0.5.0"
 edition = "2021"
-description = "Calculates the Ackermann-Péter function with arbitrary precision I/O"
+description = "arbitrary-precision Hyper-operations"
 keywords = ["math", "recursion", "big"]
 categories = ["command-line-utilities", "algorithms"]
 license = "Unlicense"
-repository = "https://github.com/Rudxain/ackermann.rs"
-
-[[bin]]
-name = "ackmn"
-path = "src/main.rs"
+repository = "https://github.com/Rudxain/HYPER-OP.RS"
 
 [dependencies]
 num-bigint = "0.4"

@@ -1,5 +1,4 @@
 #![warn(
-	unused,
 	future_incompatible,
 	clippy::unwrap_used,
 	clippy::cargo,
@@ -27,35 +26,32 @@
 
 fn print_help() {
 	println!(
-		"usage: ack m n\n\
-		where `n` and `m` are integer decimal numerals\n\
-		only the 1st 2 arguments are used, everyting else is ignored"
+		"usage: hyper_op n base exp\n\
+		where all are Natural decimal numerals\n"
 	);
 }
 
 fn main() {
-	use ackermann::A;
+	use hyper_op::H;
 	use num_bigint::BigUint;
 	use std::str::FromStr;
 
-	let args: Vec<String> = std::env::args().skip(1).take(2).collect();
+	let args: Vec<String> = std::env::args().skip(1).take(3).collect();
 
 	if args.is_empty() {
 		return print_help();
 	};
-	let m = &args[0].to_ascii_lowercase();
-	if m == "help" || m == "/?" {
+	let a0 = &args[0].to_ascii_lowercase();
+	if a0 == "help" || a0 == "?" {
 		return print_help();
 	};
 
-	let m = BigUint::from_str(m).expect("Cannot parse `m`");
+	let a0 = BigUint::from_str(a0).expect("Cannot parse `n`");
+	let a1 = BigUint::from_str(&args[1]).expect("Cannot parse `base`");
+	let a2 = BigUint::from_str(&args[2]).expect("Cannot parse `exp`");
 
-	let n = &args[1];
-
-	let n = BigUint::from_str(n).expect("Cannot parse `n`");
-
-	//we need as much memory as possible for the next step
+	// we need as much memory as possible for the next step
 	drop(args);
 
-	println!("{}", A(m, n));
+	println!("{}", H(&a0, a1, &a2));
 }

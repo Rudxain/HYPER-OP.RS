@@ -13,12 +13,16 @@ cargo install --git https://github.com/Rudxain/HYPER-OP.RS.git
 Argument syntax:
 
 ```sh
-ackmn [m | help | /?] n
+hyper-op [n | help | ?] base exp
 ```
 
 Example:
 
 ```sh
-ackmn help #prints the help text
-ackmn 2 3 #prints 9, because `A(2, 3) = 9`
+hyper-op help # prints the help text
+hyper-op 4 7 3 # tetrate 7, 3 times
 ```
+
+## See also
+
+[This helped me](https://github.com/qntm/hyperoperate) optimize the impl

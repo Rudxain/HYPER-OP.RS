@@ -1,21 +1,15 @@
 #![deny(clippy::unwrap_used)]
 #![forbid(clippy::exit)]
 
-//!Provives fns to calculate the Ackermann Function with arbitrary precision
-//!
-//!More precisely, the Ackermann-Péter fn.
-//!
-//!Input args of these fns can be stack-allocated (fixed-size ints) or heap-allocated (`num_bigint`)
-
 use num_bigint::BigUint;
 use num_traits::{One, Zero};
 
-///Calculates `b` ^ `e` (unbounded).
+/// Calculates `b` ^ `e` (unbounded).
 ///
-///It uses [binary exponentiation](https://en.wikipedia.org/wiki/Exponentiation_by_squaring) algorithm.
+/// It uses [binary exponentiation](https://en.wikipedia.org/wiki/Exponentiation_by_squaring) algorithm.
 ///
-///This helper is necessary because the `pow` trait only supports `u32` as `exp`,
-///but we need **truly arbitrary** precision, for mathematical correctness.
+/// This helper is necessary because the `pow` method only supports `u32` as `exp`,
+/// but we need **truly arbitrary** precision, for mathematical correctness.
 fn big_pow(b: BigUint, e: &BigUint) -> BigUint {
 	if *e <= BigUint::from(core::u32::MAX) {
 		return b.pow(e.to_u32_digits()[0]);
@@ -44,14 +38,11 @@ fn big_pow(b: BigUint, e: &BigUint) -> BigUint {
 	out * b
 }
 
-///Calculates the [Hyper-Operation function](https://en.wikipedia.org/wiki/Hyperoperation#Definition)
+/// Calculates the [Hyper-Operation function](https://en.wikipedia.org/wiki/Hyperoperation#Definition)
 ///
-///`n` is `n` ("order"), `base` is `a`, `exp` is `b`
-///
-///This helper is necessary because it's **way better** than the Ackermann fn.
-///It's faster, uses less memory, and it's more readable, than the optimized ack fn with explicit stack.
-///Also, it doesn't need memoization!
-fn hyper_op(n: &BigUint, base: BigUint, exp: &BigUint) -> BigUint {
+/// `n` is "order" or "degree", `base` is `a`, `exp` is `b`
+#[allow(non_snake_case)]
+pub fn H(n: &BigUint, base: BigUint, exp: &BigUint) -> BigUint {
 	if n.is_zero() {
 		return exp + 1_u8;
 	}
@@ -59,19 +50,40 @@ fn hyper_op(n: &BigUint, base: BigUint, exp: &BigUint) -> BigUint {
 		return base + exp;
 	}
 	{
+		let n0 = BigUint::zero();
 		let n1 = BigUint::one();
 		let n2 = &n1 + &n1;
+
 		if *n == n2 {
 			drop([n1, n2]);
 			return base * exp;
 		}
-		let n3 = n2 + &n1;
+		let n3 = n2.clone() + &n1;
 		if *n == n3 {
 			drop([n1, n3]);
 			return big_pow(base, exp);
 		}
+		let n4 = n3 + &n1;
+		assert!(n >= &n4);
+
+		if base.is_zero() {
+			return if (exp % 2u8).is_zero() { n1 } else { n0 };
+		}
+		if base.is_one() {
+			return n1;
+		}
+		assert!(base >= n2.clone());
+
 		if exp.is_zero() {
 			return n1;
+		}
+		if exp.is_one() {
+			return base;
+		}
+		assert!(exp >= &n2);
+
+		if base == n2 && exp == &n2 {
+			return n4;
 		}
 	}
 
@@ -84,7 +96,7 @@ fn hyper_op(n: &BigUint, base: BigUint, exp: &BigUint) -> BigUint {
 		if exp.is_zero() {
 			break;
 		}
-		out = hyper_op(&n, base.clone(), &out);
+		out = H(&n, base.clone(), &out);
 	}
 	out
 }
@@ -101,55 +113,66 @@ fn hyper_op(n: &BigUint, base: BigUint, exp: &BigUint) -> BigUint {
 	"
 	*/
 )]
-///The Ackermann-Péter function
+/// The Ackermann-Péter function
 ///
-///For performance, this implementation is defined
-///[like so](https://en.wikipedia.org/wiki/Ackermann_function#TRS,_based_on_hyperoperators)
-pub fn A<T>(m: T, n: T) -> BigUint
-where
-	BigUint: std::convert::From<T>,
-{
-	let m = BigUint::from(m);
-	let n = BigUint::from(n);
+/// For performance, this implementation is defined
+/// [like so](https://en.wikipedia.org/wiki/Ackermann_function#TRS,_based_on_hyperoperators)
+pub fn A(m: BigUint, n: BigUint) -> BigUint {
+	let n2 = BigUint::from(2u8);
+	H(&m, n2, &(n + 3_u8)) - 3_u8
+}
 
-	let n2 = BigUint::from_slice(&[2]);
+#[allow(non_snake_case)]
+/// https://en.wikipedia.org/wiki/Graham%27s_number
+pub fn Graham(mut n: BigUint) -> BigUint {
+	let n3 = BigUint::from(3u8);
 
-	hyper_op(&m, n2, &(n + 3_u8)) - 3_u8
+	let mut x = BigUint::from(4u8);
+	while !n.is_zero() {
+		n -= 1u8;
+		x = H(&(x + BigUint::from(2u8)), n3.clone(), &n3);
+	}
+	x
 }
 
 #[cfg(test)]
 mod tests {
-	use super::A;
+	#[allow(clippy::wildcard_imports)]
+	use super::*;
 	use num_bigint::BigUint;
 	use num_traits::One;
 
 	#[test]
 	fn table_cmp() {
-		let mut m;
-
-		m = 0;
+		let mut m = BigUint::zero();
 		for n in 0..core::u8::MAX {
-			assert_eq!(A(m, n), BigUint::from(n + 1));
+			assert_eq!(A(m.clone(), BigUint::from(n)), BigUint::from(n + 1));
 		}
 
-		m = 1;
+		m = BigUint::one();
 		for n in 0..(core::u8::MAX - 1) {
-			assert_eq!(A(m, n), BigUint::from(n + 2));
+			assert_eq!(A(m.clone(), BigUint::from(n)), BigUint::from(n + 2));
 		}
 
-		m = 2;
+		m = BigUint::from(2u8);
 		for n in 0..(core::u8::MAX >> 2) {
-			assert_eq!(A(m, n), BigUint::from(2 * n + 3));
+			assert_eq!(A(m.clone(), BigUint::from(n)), BigUint::from(2 * n + 3));
 		}
 
-		m = 3;
-		for n in 0..0x10 {
-			assert_eq!(A(m, n), BigUint::from(2_u32.pow(u32::from(n) + 3) - 3));
+		m = BigUint::from(3u8);
+		for n in 0..0x10u8 {
+			assert_eq!(
+				A(m.clone(), BigUint::from(n)),
+				BigUint::from(2_u32.pow(u32::from(n) + 3) - 3)
+			);
 		}
 
-		m = 4;
-		assert_eq!(A(m, 0), BigUint::from(13_u8));
-		assert_eq!(A(m, 1), BigUint::from(0xFFFD_u16));
-		assert_eq!(A(m, 2), (BigUint::one() << 0x1_00_00) - 3_u8);
+		m = BigUint::from(4u8);
+		assert_eq!(A(m.clone(), BigUint::zero()), BigUint::from(13_u8));
+		assert_eq!(A(m.clone(), BigUint::one()), BigUint::from(0xFFFD_u16));
+		assert_eq!(
+			A(m.clone(), BigUint::from(2u8)),
+			(BigUint::one() << 0x1_00_00) - 3_u8
+		);
 	}
 }

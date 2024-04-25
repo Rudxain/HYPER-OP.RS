@@ -64,7 +64,7 @@ pub fn H(n: &BigUint, base: BigUint, exp: &BigUint) -> BigUint {
 			return big_pow(base, exp);
 		}
 		let n4 = n3 + &n1;
-		assert!(n >= &n4);
+		debug_assert!(n >= &n4);
 
 		if base.is_zero() {
 			return if (exp % 2u8).is_zero() { n1 } else { n0 };
@@ -72,7 +72,7 @@ pub fn H(n: &BigUint, base: BigUint, exp: &BigUint) -> BigUint {
 		if base.is_one() {
 			return n1;
 		}
-		assert!(base >= n2.clone());
+		debug_assert!(base >= n2.clone());
 
 		if exp.is_zero() {
 			return n1;
@@ -80,7 +80,7 @@ pub fn H(n: &BigUint, base: BigUint, exp: &BigUint) -> BigUint {
 		if exp.is_one() {
 			return base;
 		}
-		assert!(exp >= &n2);
+		debug_assert!(exp >= &n2);
 
 		if base == n2 && exp == &n2 {
 			return n4;
